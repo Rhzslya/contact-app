@@ -1,20 +1,3 @@
-// Core Module
-// File System
-
-// const { create } = require("domain");
-const contacts = require("./contacts");
-
-const main = async () => {
-  const name = await contacts.askName();
-  const number = await contacts.askNumber();
-  const email = await contacts.askEmail();
-
-  const newContact = await contacts.newContactAgain();
-  contacts.saveContact(name, number, email, newContact);
-};
-
-main();
-
 // function checkSameData(name, number) {
 //   try {
 //     const contactsData = JSON.parse(fs.readFileSync(dataPath));
