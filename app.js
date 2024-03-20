@@ -9,125 +9,38 @@ const main = async () => {
   const number = await contacts.askNumber();
   const email = await contacts.askEmail();
 
+  contacts.saveContact(name, number, email);
   const newContact = await contacts.newContactAgain();
-  contacts.saveContact(name, number, email, newContact);
+  if (newContact.toLowerCase() === "y") {
+    main();
+  } else {
+    console.log(`Exiting...`);
+    process.exit(0);
+  }
 };
 
-main();
+const deleteContactData = async () => {
+  await contacts.showContact();
+  const name = await contacts.askDeleteName();
 
-// function checkSameData(name, number) {
-//   try {
-//     const contactsData = JSON.parse(fs.readFileSync(dataPath));
-//     for (const contact of contactsData) {
-//       if (contact.name === name) {
-//         console.log(`Name ${name} already exist`);
-//         return true;
-//       }
-//       if (contact.number === number) {
-//         console.log(`Number ${number} already exist`);
-//         return true;
-//       }
-//     }
-//     return false;
-//   } catch (er) {
-//     console.error(er);
-//     return false;
-//   }
-// }
+  contacts.resultDeleteContact(name);
+};
 
-// rl.question("Add Contact Name : ", (name) => {
-//   if (name === "") {
-//     console.log(`Name Cannot Be Empty`);
-//     rl.close();
-//   } else {
-//     rl.question("What is Phone Number : ", (number) => {
-//       if (number.length <= 10) {
-//         console.log("Wrong Format Number");
-//         rl.close();
-//       } else {
-//         number = number.replace(/-/g, "");
-
-//         const formattedNumber = formattedPhoneNumber(number);
-//         if (checkSameData(name, formattedNumber)) {
-//           rl.close();
-//           return;
-//         } else {
-//           console.log(
-//             `Your Add Contact ${name}, Phone Number is ${formattedNumber}`
-//           );
-//         }
-
-//         rl.question("This Is Corret Number? (y/n)", (answer) => {
-//           if (answer.toLowerCase() === "y") {
-//             try {
-//               let contactsData = [];
-//               try {
-//                 contactsData = JSON.parse(
-//                   fs.readFileSync("data/contacts.json")
-//                 );
-//               } catch (er) {
-//                 console.log(
-//                   "File not found or empty. Initializing empty contacts."
-//                 );
-//               }
-
-//               contactsData.push({
-//                 name: name,
-//                 number: formattedNumber,
-//               });
-//               fs.writeFileSync(
-//                 "data/contacts.json",
-//                 JSON.stringify(contactsData)
-//               );
-//               console.log(`Contact Succesfully added`);
-//               rl.close();
-//             } catch (er) {
-//               console.log(er);
-//             }
-//           } else if (answer.toLowerCase() === "n") {
-//             rl.question("Enter The Correct Phone Number : ", (newNumber) => {
-//               const formattedNewNumber = formattedPhoneNumber(number);
-//               if (checkSameData(name, formattedNewNumber)) {
-//                 rl.close();
-//                 return;
-//               } else {
-//                 console.log(
-//                   `Your Add Contact ${name}, Phone Number is ${formattedNewNumber}`
-//                 );
-//               }
-
-//               try {
-//                 let contactsData = [];
-//                 try {
-//                   contactsData = JSON.parse(
-//                     fs.readFileSync("data/contacts.json")
-//                   );
-//                 } catch (er) {
-//                   console.log(
-//                     "File not found or empty. Initializing empty contacts."
-//                   );
-//                 }
-
-//                 contactsData.push({
-//                   name: name,
-//                   number: newNumber,
-//                 });
-//                 fs.writeFileSync(
-//                   "data/contacts.json",
-//                   JSON.stringify(contactsData)
-//                 );
-//                 console.log(`Contact Succesfully added`);
-//                 rl.close();
-//               } catch (er) {
-//                 console.log(er);
-//               }
-//             });
-//           } else {
-//             console.log(`Invalid input please enter 'y' or 'n'`);
-//             rl.close();
-//           }
-//         });
-//       }
-//     });
-//   }
-// });
+const commandLine = () => {
+  if (process.argv[2] === "add") {
+    main();
+  } else if (process.argv[2] === "list") {
+    contacts.showContact();
+    return process.exit(1);
+  } else if (process.argv[2] === "delete") {
+    deleteContactData();
+  } else {
+    console.log(`You Can use command below to use this program`);
+    const showCommand = contacts.commandChoice();
+    showCommand.forEach((show, index) => {
+      console.log(`${index + 1}. ${show}`);
+    });
+    return process.exit(1);
+  }
+};
+commandLine();
